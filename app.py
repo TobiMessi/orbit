@@ -7,6 +7,9 @@ from werkzeug.security import generate_password_hash, check_password_hash
 app = Flask(__name__)
 app.secret_key = 'orbit_secret_key_2026'
 
+VERSION = "1.0.0"
+GITHUB_REPO = "TobiMessi/orbit-control"
+
 DB_PATH = '/app/orbit.db'
 
 
@@ -182,6 +185,16 @@ def login():
 def logout():
     session.pop('user', None)
     return jsonify({"status": "ok"})
+
+
+# ============ ROUTING - VERSION (NOWE!) ============
+
+@app.route('/api/version')
+def get_version():
+    return jsonify({
+        'current': VERSION,
+        'github_repo': f'https://github.com/{GITHUB_REPO}'
+    })
 
 
 # ============ ROUTING - STATUS ============
