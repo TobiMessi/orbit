@@ -1,14 +1,14 @@
 import docker
 import sqlite3
 import os
-from flask import Flask, jsonify, render_template, request, session
+from flask import Flask, jsonify, render_template, request, session, redirect, url_for
 from werkzeug.security import generate_password_hash, check_password_hash
 
 app = Flask(__name__)
 app.secret_key = 'orbit_secret_key_2026'
 
 VERSION = "1.0.0"
-GITHUB_REPO = "TobiMessi/orbit-control"
+GITHUB_REPO = "TobiMessi/orbit"
 
 DB_PATH = '/app/orbit.db'
 
@@ -25,7 +25,6 @@ def init_db():
     conn = get_db()
     db = conn.cursor()
 
-    # Użytkownicy
     db.execute('''CREATE TABLE IF NOT EXISTS users
                   (
                       id
@@ -40,7 +39,6 @@ def init_db():
                       TEXT
                   )''')
 
-    # Hosty Docker
     db.execute('''CREATE TABLE IF NOT EXISTS hosts
                   (
                       id
@@ -58,7 +56,6 @@ def init_db():
                       0
                   )''')
 
-    # Ustawienia powiadomień
     db.execute('''CREATE TABLE IF NOT EXISTS notifications
                   (
                       id
@@ -76,7 +73,6 @@ def init_db():
                       1
                   )''')
 
-    # Historia alertów
     db.execute('''CREATE TABLE IF NOT EXISTS alerts
                   (
                       id
@@ -96,7 +92,6 @@ def init_db():
                       CURRENT_TIMESTAMP
                   )''')
 
-    # Dodaj localhost jako domyślny host jeśli nie istnieje
     db.execute("SELECT id FROM hosts WHERE is_local = 1")
     if not db.fetchone():
         db.execute("INSERT INTO hosts (name, url, is_local) VALUES (?, ?, ?)",
@@ -113,7 +108,6 @@ init_db()
 # ============ DOCKER CLIENT ============
 
 def get_docker_client(host_id=None):
-    """Pobiera klienta Docker dla danego hosta"""
     try:
         if host_id:
             conn = get_db()
@@ -127,7 +121,6 @@ def get_docker_client(host_id=None):
         return None
 
 
-# Domyślny klient
 client = get_docker_client()
 if client:
     print("✅ Połączono z Docker Engine")
@@ -140,6 +133,28 @@ def home():
     if 'user' in session:
         return render_template('index.html')
     return render_template('login.html')
+
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'GET':
+        return render_template('login.html')
+
+    data = request.json
+    email = data.get('email')
+    password = data.get('password')
+
+    if not email or not password:
+        return jsonify({"status": "error", "message": "Uzupełnij wszystkie pola"}), 400
+
+    conn = get_db()
+    user = conn.execute("SELECT password FROM users WHERE email=?", (email,)).fetchone()
+    conn.close()
+
+    if user and check_password_hash(user['password'], password):
+        session['user'] = email
+        return jsonify({"status": "ok"})
+    return jsonify({"status": "error", "message": "Błędne dane logowania"}), 401
 
 
 @app.route('/register', methods=['POST'])
@@ -162,32 +177,13 @@ def register():
         return jsonify({"status": "error", "message": "Ten email jest już zarejestrowany"}), 400
 
 
-@app.route('/login', methods=['POST'])
-def login():
-    data = request.json
-    email = data.get('email')
-    password = data.get('password')
-
-    if not email or not password:
-        return jsonify({"status": "error", "message": "Uzupełnij wszystkie pola"}), 400
-
-    conn = get_db()
-    user = conn.execute("SELECT password FROM users WHERE email=?", (email,)).fetchone()
-    conn.close()
-
-    if user and check_password_hash(user['password'], password):
-        session['user'] = email
-        return jsonify({"status": "ok"})
-    return jsonify({"status": "error", "message": "Błędne dane logowania"}), 401
-
-
 @app.route('/logout')
 def logout():
     session.pop('user', None)
-    return jsonify({"status": "ok"})
+    return redirect(url_for('login'))
 
 
-# ============ ROUTING - VERSION (NOWE!) ============
+# ============ ROUTING - VERSION ============
 
 @app.route('/api/version')
 def get_version():
@@ -342,36 +338,30 @@ def container_create():
         data = request.json
         image = data.get('image')
         name = data.get('name')
-        ports = data.get('ports', {})  # {"80/tcp": 8080}
-        env = data.get('env', [])  # ["KEY=value"]
-        volumes = data.get('volumes', {})  # {"/host/path": {"bind": "/container/path", "mode": "rw"}}
+        ports = data.get('ports', {})
+        env = data.get('env', [])
+        volumes = data.get('volumes', {})
         restart_policy = data.get('restart_policy', 'no')
         network = data.get('network', None)
 
         if not image:
             return jsonify({"status": "error", "message": "Obraz jest wymagany"}), 400
 
-        # Spróbuj pobrać obraz jeśli nie istnieje
         try:
             client.images.get(image)
         except docker.errors.ImageNotFound:
             print(f"📥 Pobieranie obrazu: {image}")
             client.images.pull(image)
 
-        # Przygotuj port bindings
         port_bindings = {}
-        ports_config = {}
         if ports:
             for container_port, host_port in ports.items():
                 port_bindings[container_port] = host_port
-                ports_config[container_port] = {}
 
-        # Restart policy
         restart_config = {"Name": restart_policy}
         if restart_policy == "on-failure":
             restart_config["MaximumRetryCount"] = 5
 
-        # Utwórz kontener
         container = client.containers.run(
             image=image,
             name=name if name else None,
@@ -392,7 +382,7 @@ def container_create():
         return jsonify({"status": "error", "message": str(e)}), 500
 
 
-# ============ OBRAZY - PULL ============
+# ============ OBRAZY ============
 
 @app.route('/image/pull', methods=['POST'])
 def image_pull():
@@ -489,7 +479,7 @@ def volume_remove(volume_name):
         return jsonify({"status": "error", "message": str(e)}), 500
 
 
-# ============ HOSTY (przygotowane na multi-host) ============
+# ============ HOSTY ============
 
 @app.route('/hosts')
 def get_hosts():
@@ -511,12 +501,11 @@ def add_host():
     try:
         data = request.json
         name = data.get('name')
-        url = data.get('url')  # np. tcp://192.168.0.100:2375
+        url = data.get('url')
 
         if not name or not url:
             return jsonify({"status": "error", "message": "Nazwa i URL są wymagane"}), 400
 
-        # Sprawdź połączenie
         try:
             test_client = docker.DockerClient(base_url=url)
             test_client.ping()
@@ -540,7 +529,6 @@ def remove_host(host_id):
 
     try:
         conn = get_db()
-        # Nie pozwól usunąć lokalnego hosta
         host = conn.execute("SELECT is_local FROM hosts WHERE id = ?", (host_id,)).fetchone()
         if host and host['is_local']:
             return jsonify({"status": "error", "message": "Nie można usunąć lokalnego hosta"}), 400

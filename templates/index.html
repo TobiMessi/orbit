@@ -14,8 +14,28 @@
         body {
             background-color: var(--bg); color: var(--text);
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            padding: 30px; margin: 0; line-height: 1.5;
+            padding: 0; margin: 0; line-height: 1.5;
         }
+
+        /* UPDATE BANNER */
+        .update-banner {
+            display: none;
+            background: linear-gradient(90deg, #238636, #2ea043);
+            color: white;
+            padding: 12px 20px;
+            text-align: center;
+            font-size: 0.85rem;
+        }
+        .update-banner.visible { display: block; }
+        .update-banner a {
+            color: white;
+            font-weight: 600;
+            margin-left: 10px;
+            text-decoration: underline;
+        }
+        .update-banner a:hover { opacity: 0.9; }
+
+        .main-content { padding: 30px; }
 
         .header {
             display: flex; justify-content: space-between; align-items: center;
@@ -136,40 +156,48 @@
 </head>
 <body>
 
-    <div class="header">
-        <h1>🚀 Orbit <b>Control</b></h1>
-        <button class="logout" onclick="logout()">Logout</button>
+    <!-- UPDATE BANNER -->
+    <div class="update-banner" id="update-banner">
+        🎉 Nowa wersja dostępna!
+        <a href="https://github.com/TobiMessi/orbit/releases/latest" target="_blank">Pobierz teraz →</a>
     </div>
 
-    <div class="tabs">
-        <div class="tab" data-type="containers">
-            <span class="tab-label">Containers</span>
-            <span class="count" id="count-containers">0</span>
+    <div class="main-content">
+        <div class="header">
+            <h1>Orbit <b>Control</b></h1>
+            <button class="logout" onclick="logout()">Logout</button>
         </div>
-        <div class="tab" data-type="images">
-            <span class="tab-label">Images</span>
-            <span class="count" id="count-images">0</span>
-        </div>
-        <div class="tab" data-type="volumes">
-            <span class="tab-label">Volumes</span>
-            <span class="count" id="count-volumes">0</span>
-        </div>
-        <div class="tab" data-type="networks">
-            <span class="tab-label">Networks</span>
-            <span class="count" id="count-networks">0</span>
-        </div>
-        <div class="tab disabled" data-type="stacks">
-            <span class="tab-label">Stacks</span>
-            <span class="count" id="count-stacks" style="font-size: 0.8rem; color: #d29922;">coming soon</span>
-        </div>
-    </div>
 
-    <div id="details-section">
-        <div class="section-header">
-            <span class="section-title" id="details-header">Lista</span>
-            <button class="btn" id="btn-add" style="display:none;" onclick="openCreateModal()">+ Dodaj</button>
+        <div class="tabs">
+            <div class="tab" data-type="containers">
+                <span class="tab-label">Containers</span>
+                <span class="count" id="count-containers">0</span>
+            </div>
+            <div class="tab" data-type="images">
+                <span class="tab-label">Images</span>
+                <span class="count" id="count-images">0</span>
+            </div>
+            <div class="tab" data-type="volumes">
+                <span class="tab-label">Volumes</span>
+                <span class="count" id="count-volumes">0</span>
+            </div>
+            <div class="tab" data-type="networks">
+                <span class="tab-label">Networks</span>
+                <span class="count" id="count-networks">0</span>
+            </div>
+            <div class="tab disabled" data-type="stacks">
+                <span class="tab-label">Stacks</span>
+                <span class="count" id="count-stacks" style="font-size: 0.8rem; color: #d29922;">coming soon</span>
+            </div>
         </div>
-        <div id="details-list"></div>
+
+        <div id="details-section">
+            <div class="section-header">
+                <span class="section-title" id="details-header">Lista</span>
+                <button class="btn" id="btn-add" style="display:none;" onclick="openCreateModal()">+ Dodaj</button>
+            </div>
+            <div id="details-list"></div>
+        </div>
     </div>
 
     <!-- Modal tworzenia kontenera -->

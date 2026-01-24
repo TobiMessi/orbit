@@ -31,7 +31,8 @@
                 body: JSON.stringify({email, password})
             });
             const data = await res.json();
-            if(res.ok && path === '/login') window.location.reload();
+            if(res.ok && path === '/login') window.location.href = '/';
+            else if(res.ok) alert(data.message);
             else alert(data.message || "Błąd!");
         }
     </script>
