@@ -85,17 +85,24 @@ docker-compose up -d
 
 ---
 
-##  Screenshots
-<p align="center">
+## Screenshots
+
+<div align="center">
 <details>
 <summary>Click to expand</summary>
 
+<br>
+
 ### Login Page
-<img src="docs/login.png" alt="Login" width="600">
+<img src="docs/login.png" alt="Login" width="600" style="display: block; margin: 0 auto;">
+
+<br>
 
 ### Dashboard
-<img src="docs/screenshot.png" alt="Orbit Control Screenshot" width="600">
-</p>
+<img src="docs/screenshot.png" alt="Orbit Control Screenshot" width="600" style="display: block; margin: 0 auto;">
+
+</details>
+</div>
 
 </details>
 
