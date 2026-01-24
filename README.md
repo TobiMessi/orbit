@@ -19,23 +19,23 @@
 
 ---
 
-## ✨ Features
+##  Features
 
 | Feature | Status |
 |---------|--------|
-| 🐳 **Container Management** | ✅ Start, Stop, Restart, Remove |
-| 📦 **Image Management** | ✅ Pull, Remove |
-| 💾 **Volume Management** | ✅ Create, Remove |
-| 🌐 **Network Management** | ✅ Create, Remove |
-| 🔐 **User Authentication** | ✅ Login, Register |
-| 📊 **Real-time Stats** | ✅ Auto-refresh every 5s |
-| 🔔 **Update Notifications** | ✅ GitHub release checker |
-| 📚 **Stack Management** | 🔜 Coming Soon |
-| 🖥️ **Multi-host Support** | 🔜 Coming Soon |
+|  **Container Management** |  Start, Stop, Restart, Remove |
+|  **Image Management** |  Pull, Remove |
+|  **Volume Management** |  Create, Remove |
+|  **Network Management** |  Create, Remove |
+|  **User Authentication** |  Login, Register |
+|  **Real-time Stats** |  Auto-refresh every 5s |
+|  **Update Notifications** |  GitHub release checker |
+|  **Stack Management** |  Coming Soon |
+|  **Multi-host Support** |  Coming Soon |
 
 ---
 
-## 🚀 Installation
+##  Installation
 
 ### Docker (Recommended)
 
@@ -74,7 +74,7 @@ docker-compose up -d
 
 ---
 
-## 📖 Usage
+##  Usage
 
 1. Open **http://localhost:5001** in your browser
 2. **Register** a new account
@@ -84,7 +84,7 @@ docker-compose up -d
 
 ---
 
-## 📸 Screenshots
+##  Screenshots
 
 <details>
 <summary>Click to expand</summary>
@@ -102,7 +102,7 @@ docker-compose up -d
 
 ---
 
-## 🗺️ Roadmap
+##  Roadmap
 
 - [x] Container CRUD operations
 - [x] Image management
@@ -119,7 +119,7 @@ docker-compose up -d
 
 ---
 
-## 🛠️ Tech Stack
+##  Tech Stack
 
 - **Backend:** Python 3.11, Flask
 - **Frontend:** Vanilla JS, CSS
@@ -128,7 +128,7 @@ docker-compose up -d
 
 ---
 
-## 🤝 Contributing
+##  Contributing
 
 Contributions are welcome! Feel free to:
 
@@ -140,15 +140,15 @@ Contributions are welcome! Feel free to:
 
 ---
 
-## 📄 License
+##  License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ---
 
-## ⭐ Star History
+##  Star History
 
-If you find this project useful, please consider giving it a star! ⭐
+If you find this project useful, please consider giving it a star! 
 
 ---
 
