@@ -19,7 +19,7 @@
 
 ##  Login
 
-<img src="docs/login.png" alt="Login" width="400">
+<img src="docs/login.png" alt="Login" width="800">
 
 ---
 
