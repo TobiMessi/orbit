@@ -9,7 +9,7 @@
 ![Flask](https://img.shields.io/badge/Flask-Backend-000000?style=for-the-badge&logo=flask&logoColor=white)
 ![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)
 
-<img src="docs/screenshot.png" alt="Orbit Control Screenshot" width="800">
+
 
 **Monitor and manage your Docker containers, images, volumes, and networks from a beautiful web interface.**
 
@@ -17,9 +17,6 @@
 
 </div>
 
-##  Login
-
-<img src="docs/login.png" alt="Login" width="800">
 
 ---
 
@@ -97,10 +94,8 @@ docker-compose up -d
 <img src="docs/login.png" alt="Login" width="600">
 
 ### Dashboard
-<img src="docs/dashboard.png" alt="Dashboard" width="600">
+<img src="docs/screenshot.png" alt="Orbit Control Screenshot" width="600">
 
-### Container Management
-<img src="docs/containers.png" alt="Containers" width="600">
 
 </details>
 
