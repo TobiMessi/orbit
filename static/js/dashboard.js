@@ -56,7 +56,6 @@ function updateList(type) {
     };
     header.innerText = titles[type] || 'Lista';
 
-    // Pokaż przycisk dodawania
     addBtn.style.display = ['containers', 'volumes', 'networks', 'images'].includes(type) ? 'block' : 'none';
 
     const items = cachedData[type] || [];
@@ -242,13 +241,11 @@ async function createContainer() {
         network: network || null
     };
 
-    // Porty
     if (portHost && portContainer) {
         body.ports = {};
         body.ports[`${portContainer}/tcp`] = parseInt(portHost);
     }
 
-    // Env
     if (envRaw) {
         body.env = envRaw.split(',').map(e => e.trim());
     }
@@ -260,5 +257,134 @@ async function createContainer() {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(body)
         });
-        const data = await
-
+        const data = await res.json();
+        showToast(data.message, res.ok ? 'success' : 'error');
+        closeModal('container-modal');
+        refreshData();
+    } catch (err) {
+        showToast('Błąd: ' + err, 'error');
+    }
+}
+
+// Tworzenie sieci/volume
+async function confirmSimpleCreate() {
+    const name = document.getElementById('simple-name').value.trim();
+    if (!name) {
+        showToast('Podaj nazwę!', 'error');
+        return;
+    }
+
+    let url, body;
+    if (activeTab === 'networks') {
+        const driver = document.getElementById('simple-driver').value;
+        url = '/network/create';
+        body = { name, driver };
+    } else if (activeTab === 'volumes') {
+        url = '/volume/create';
+        body = { name };
+    }
+
+    try {
+        const res = await fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(body)
+        });
+        const data = await res.json();
+        showToast(data.message, res.ok ? 'success' : 'error');
+        closeModal('simple-modal');
+        refreshData();
+    } catch (err) {
+        showToast('Błąd: ' + err, 'error');
+    }
+}
+
+// Pull image
+async function pullImage() {
+    const image = document.getElementById('pull-image').value.trim();
+    if (!image) {
+        showToast('Podaj nazwę obrazu!', 'error');
+        return;
+    }
+
+    try {
+        showToast('Pobieranie obrazu...', 'success');
+        const res = await fetch('/image/pull', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ image })
+        });
+        const data = await res.json();
+        showToast(data.message, res.ok ? 'success' : 'error');
+        closeModal('pull-modal');
+        refreshData();
+    } catch (err) {
+        showToast('Błąd: ' + err, 'error');
+    }
+}
+
+// ============ TABS ============
+
+function toggleTab(type) {
+    if (type === 'stacks') return;
+
+    const section = document.getElementById('details-section');
+    const tabs = document.querySelectorAll('.tab');
+
+    if (activeTab === type) {
+        activeTab = null;
+        section.classList.remove('visible');
+        tabs.forEach(t => t.classList.remove('active'));
+    } else {
+        activeTab = type;
+        section.classList.add('visible');
+        tabs.forEach(t => {
+            t.classList.toggle('active', t.dataset.type === type);
+        });
+        updateList(type);
+    }
+}
+
+// ============ TOAST ============
+
+function showToast(message, type = 'success') {
+    const toast = document.getElementById('toast');
+    toast.innerText = message;
+    toast.className = 'toast visible ' + type;
+    setTimeout(() => toast.classList.remove('visible'), 3000);
+}
+
+// ============ LOGOUT ============
+
+function logout() {
+    window.location.href = '/logout';
+}
+
+// ============ UPDATE CHECKER ============
+
+async function checkForUpdate() {
+    try {
+        const currentVersion = "1.0.0";
+        const res = await fetch('https://api.github.com/repos/TobiMessi/orbit/releases/latest');
+        if (!res.ok) return;
+
+        const data = await res.json();
+        const latestVersion = data.tag_name.replace('v', '');
+
+        if (latestVersion !== currentVersion) {
+            document.getElementById('update-banner').classList.add('visible');
+        }
+    } catch (err) {
+        console.log('Update check failed:', err);
+    }
+}
+
+// ============ INIT ============
+
+document.querySelectorAll('.tab').forEach(tab => {
+    tab.addEventListener('click', () => toggleTab(tab.dataset.type));
+});
+
+refreshData();
+setInterval(refreshData, 5000);
+checkForUpdate();
