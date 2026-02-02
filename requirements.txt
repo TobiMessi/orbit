@@ -1,0 +1,5 @@
+fastapi
+uvicorn
+docker
+jinja2
+PyYAML
